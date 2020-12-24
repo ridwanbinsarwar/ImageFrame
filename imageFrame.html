@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>ImageFrame</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    
+    <body>
+       
+
+        <div id="border" class="border">
+            <div id= "content" class="container">
+            
+                <p id="para1" class="para">Lorem ipsum dolor sit amet consectetur adipisicing elit. Earum explicabo blanditiis assumenda amet
+                    quia non velit tempore expedita in numquam. Similique, voluptate dolores. Facere, dolorum!
+                    Repudiandae quam recusandae quidem est.
+                </p>
+            </div> 
+        </div>
+
+        
+
+    </body>
+
+    <style>
+        /* all elements padding and margin zeroed */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-size: 0;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+        .border{
+            width: 100%;
+            height: 100%;
+            
+            text-align: center;  
+        }
+
+        .container {
+            color: black;
+            display: inline-block;
+            border-style: solid;
+            border-color: black;
+            vertical-align: top;
+            overflow: hidden;
+        }
+        .para{
+            font-size:20px;
+            text-align: center;
+            white-space: pre-line;
+            word-wrap: break-word;
+            margin: 0;
+            
+            position: relative;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+    </style>
+
+    <script>
+        var img_size = 70;
+
+        var left_images = [];
+        var right_images = [];
+        var top_images = [];
+        var bottom_images = [];
+
+        // returns random number between min(included) and max(included)
+        function randomInteger(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function ratio_image(){
+            if(window.innerWidth > 1500)
+                return 0.05;
+            else if(window.innerWidth > 1000)
+                return 0.1;
+            else 
+                return 0.2;
+        }
+
+        var div1 = document.createElement("div"); // top images
+        var div4 = document.createElement("div"); // bottom images
+
+        // add images on div top and bottom div
+        function bottom_top_div(num_images){
+
+             // clear previously rendred images 
+            //makes resizing slow when height is large
+
+            while (div1.lastElementChild) {
+                div1.removeChild(div1.lastElementChild);
+            }
+            while (div4.lastElementChild) {
+                div4.removeChild(div4.lastElementChild);
+            }
+
+            
+
+
+            for(i =0; i<num_images; i++) {
+                var img = document.createElement("img");
+                img.id = i;
+                img.src = (i%8) + ".jpg";
+
+                img.style.height = img_size + 'px';
+                img.style.width = img_size + 'px';
+                // img.style.display ='block'
+                img.style.position= 'relative';
+                
+                top_images.push(i);
+                div1.appendChild(img);
+
+            }
+
+
+            for(i =0; i<num_images; i++) {
+                var img = document.createElement("img");
+                img.id = i+301;
+                img.src = (i%8) + ".jpg";
+
+                img.style.height = img_size + 'px';
+                img.style.width = img_size + 'px';
+                img.style.position= 'relative';
+                
+                bottom_images.push(i+301);
+                div4.appendChild(img);
+
+            }
+            
+        }
+        
+        var div2 = document.createElement("div"); // left images
+        div2.id = "leftslide";
+        var div3 = document.createElement("div"); // right images
+
+        // add images on div left and right div
+
+        function left_right_div(num_images){
+            
+             // clear previously rendred images 
+            //makes resizing slow when height is large
+            
+
+            while (div2.lastElementChild) {
+                div2.removeChild(div2.lastElementChild);
+            }
+            while (div3.lastElementChild) {
+                div3.removeChild(div3.lastElementChild);
+            }
+            for(i =0; i<num_images-1; i++) {
+                var img = document.createElement("img");
+                img.id = i+101;
+                img.src = (i%8) + ".jpg";
+
+                img.style.height = img_size + 'px';
+                img.style.width = img_size + 'px';
+                img.style.display ='block'
+                img.style.position= 'relative';
+                left_images.push(i+101)
+                div2.appendChild(img);
+
+            }
+            div2.style.display = 'inline-block'
+
+
+            for(i =0; i<num_images-1; i++) {
+                var img = document.createElement("img");
+                img.id = i+201;
+                img.src = (i%8) + ".jpg";
+
+                img.style.height = img_size + 'px';
+                img.style.width = img_size + 'px';
+                img.style.display ='block'
+                img.style.position= 'relative';
+                right_images.push(i+201);
+                div3.appendChild(img);
+
+            }
+            div3.style.display = 'inline-block';
+        }
+    
+        let d = document.getElementById("content");
+        let b = document.getElementById("border");;
+        // add divs in view
+        b.insertBefore(div1, d);
+        b.insertBefore(div2, d);
+        b.appendChild(div3);
+        b.appendChild(div4);
+        
+        
+         // given array of images and postion
+        // get two adjacent image to swap
+        function init_swap(arr, i){
+                j = randomInteger(0,arr.length-1);
+
+                if(j==arr.length-1){
+                    j = j -1;
+                }
+                var k = j+1;
+                j = arr[j];
+                k = arr[k];
+                var step = 0;
+
+                // top or bottom images
+                if(i==2 || i == 1){
+                    var img1 = document.getElementById(k);
+                    var img2 = document.getElementById(j);
+                    img2.style.top = 0 + 'px';
+                    img1.style.bottom = 0 + 'px';
+                    swap_BottomUp(img1, img2, step);
+                }else {
+                    var img2 = document.getElementById(k);
+                    var img1 = document.getElementById(j);
+                    img1.style.left = 0 + 'px';
+                    img2.style.right = 0 + 'px';
+                    swap_LeftRight(img1, img2, step);
+
+                }
+        }
+        // every 6 sec swap two image
+        const interval = setInterval(function() {
+
+            var i = randomInteger(0,3);
+            if(i==0){
+                init_swap(top_images,i);
+            }
+            else if(i==1){
+                init_swap(left_images,i);
+            }
+            else if(i==2){
+                init_swap(right_images,i);
+            }
+            else if(i==3){
+                init_swap(bottom_images,i);
+            }
+
+        }, 6000);
+
+        // swap two images (top and bottom)
+        function swap_BottomUp(img1, img0, step) {
+            s = img_size*0.1;
+            step += s;
+            if(step < img_size){
+                var x = parseInt(img1.style.bottom,10);
+                img1.style.bottom = (x + s + 'px');
+
+                var v = parseInt(img0.style.top,10);
+                img0.style.top = (v + s + 'px');
+                
+                animate = setTimeout(function(){swap_BottomUp(img1, img0, step);},50);
+            } else {
+                delete img1.style.removeProperty("bottom");
+                delete img0.style.removeProperty("top");
+                clearTimeout(animate);
+                animate = 0;
+                var src1 = img1.src.split("/").pop()
+                var src0 = img0.src.split("/").pop()
+
+                img0.src = src1;
+                img1.src = src0;
+                
+            }  
+        }
+
+
+         // swap two images (left and right)
+        function swap_LeftRight(img1, img0, step) {
+            s = img_size*0.1;
+            step += s;
+            if(step < img_size){
+                
+                var x = parseInt(img1.style.left,10);
+                img1.style.left = (x + s + 'px');
+
+                var v = parseInt(img0.style.right,10);
+                img0.style.right = (v + s + 'px');
+                
+                animate = setTimeout(function(){swap_LeftRight(img1, img0, step);},50);
+            } else {
+                delete img1.style.removeProperty("left");
+                delete img0.style.removeProperty("right");
+                clearTimeout(animate);
+                animate = 0;
+                var src1 = img1.src.split("/").pop()
+                var src0 = img0.src.split("/").pop()
+
+                img0.src = src1;
+                img1.src = src0;
+               
+
+            }  
+        }
+        // given image ratio resize images     
+        function resizeImage(offset){
+            
+            d = document.getElementById("content");
+            d1 = document.getElementById("para1");
+
+            w= document.body.getBoundingClientRect().width ;
+            w = Math.min(window.innerWidth-30, w);
+            h= d1.getBoundingClientRect().height;
+
+            var window_w = w*0.7;
+            var window_h = h;
+
+            var imageWidth = window_w*offset;
+            var contentHeight = window_h;
+            var contentWidth = window_w - (imageWidth*2);
+
+            d.style.width = contentWidth +'px';
+            
+            var extraHeight = contentHeight%imageWidth;
+            // set minimum height of content
+            h = Math.max((contentHeight-extraHeight),imageWidth);
+
+            // add extra image to fit content
+            if(window_h > h){
+                contentHeight += imageWidth;
+                h += imageWidth;
+            }
+            d.style.height = h +'px'
+            img_size = imageWidth;
+
+            // remove all images
+            left_images = [];
+            right_images = [];
+            top_images = [];
+            bottom_images = [];
+            
+            var numImg_bottomTop = contentHeight/imageWidth;
+            var numImg_leftRight = (contentWidth/imageWidth)+2
+            
+            if(numImg_bottomTop < 1)
+                numImg_bottomTop += 1;
+
+            // add images to div
+            bottom_top_div(numImg_leftRight);
+            left_right_div(numImg_bottomTop);
+
+            // add top bottom images to left right images 
+            left_images.unshift(top_images[0]);
+            left_images.push(bottom_images[0]);
+
+            right_images.unshift(top_images[top_images.length-1]);
+            right_images.push(bottom_images[bottom_images.length-1]);
+
+
+            var elems = document.getElementsByTagName('img');
+            // set images size
+            for (var i = 0; i < elems.length; i++) {
+                    elems[i].style.width = img_size + 'px';
+                    elems[i].style.height = img_size + 'px';
+                
+            }
+
+
+        }
+
+        // render for the first time
+        resizeImage(ratio_image());
+        resizeImage(ratio_image());
+
+        // on focus correct position on all image
+        window.addEventListener('focus', function(){
+            var elems = document.getElementsByTagName('img');
+            for (var i = 0; i < elems.length; i++) {
+                   
+                    delete elems[i].style.removeProperty("bottom");
+                    delete elems[i].style.removeProperty("top");
+
+                    delete elems[i].style.removeProperty("left");
+                    delete elems[i].style.removeProperty("right");
+            }
+        }, false);
+
+
+        window.addEventListener('resize', function(event){
+            resizeImage(ratio_image());
+            resizeImage(ratio_image());
+
+        });
+
+       
+
+    </script>
+</html>
